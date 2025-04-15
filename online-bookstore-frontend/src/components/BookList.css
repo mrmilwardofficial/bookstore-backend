@@ -1,0 +1,30 @@
+.book-card {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 10px;
+}
+
+.book-card h3 {
+  margin: 0;
+}
+
+.book-card p {
+  margin: 0.25rem 0;
+}
+
+.book-card button {
+  margin-top: 0.5rem;
+  margin-right: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  background: #2196f3;
+  border: none;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.book-card button.delete {
+  background: #e53935;
+}
