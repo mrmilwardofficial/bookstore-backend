@@ -1,14 +1,14 @@
-# Start with OpenJDK image
-FROM eclipse-temurin:17-jdk-alpine:17.0.8_7-jdk-alpine
+# Use lightweight Java 17 base image
+FROM eclipse-temurin:17-jdk-alpine
 
 # Set working directory
 WORKDIR /app
 
-# Copy everything and build the app
+# Copy everything into container
 COPY . .
 
-# Build the app
-RUN ./mvnw clean install -DskipTests
+# Grant permission and build the app
+RUN chmod +x mvnw && ./mvnw clean install -DskipTests
 
-# Run the app
+# Run the built JAR file
 CMD ["java", "-jar", "target/bookstore-0.0.1-SNAPSHOT.jar"]
