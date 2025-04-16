@@ -11,4 +11,4 @@ COPY . .
 RUN chmod +x mvnw && ./mvnw clean install -DskipTests
 
 # Run the built JAR file
-CMD ["java", "-jar", "target/bookstore-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-jar", "target/bookstore-1.0.0.jar"]
