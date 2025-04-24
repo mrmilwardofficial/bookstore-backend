@@ -1,0 +1,10 @@
+{
+    "api_url": "http://your-dashbase-api:port",
+    "auth_token": "your_api_token_or_basic_auth",
+    "theme": "dark",
+    "features": {
+      "search": true,
+      "dashboard": true
+    }
+  }
+  
