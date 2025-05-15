@@ -1,21 +1,24 @@
 import React from 'react';
 import BookList from './components/BookList';
 import AddBookForm from './components/AddBookForm';
-import CategoryList from './components/CategoryList';
-import axios from 'axios';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import CategoryManager from './components/CategoryManager';
 import './App.css';
-function App() {
+
+const App = () => {
+  const [refreshFlag, setRefreshFlag] = React.useState(false);
+
+  const triggerRefresh = () => {
+    setRefreshFlag(!refreshFlag);
+  };
+
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1>📖 Online Bookstore</h1>
-      <CategoryList />
-      <AddBookForm />
-      <hr />
-      <BookList />
+    <div className="app">
+      <h1>Online Bookstore</h1>
+      <AddBookForm onBookAdded={triggerRefresh} />
+      <BookList key={refreshFlag} />
+      <CategoryManager />
     </div>
   );
-}
+};
 
 export default App;

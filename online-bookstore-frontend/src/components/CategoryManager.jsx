@@ -3,52 +3,49 @@ import axios from 'axios';
 
 const CategoryManager = () => {
   const [categories, setCategories] = useState([]);
-  const [newCategory, setNewCategory] = useState('');
-  const [message, setMessage] = useState('');
-
-  const fetchCategories = () => {
-    axios.get('http://localhost:8082/categories')
-      .then(res => setCategories(res.data))
-      .catch(() => setMessage("❌ Failed to fetch categories"));
-  };
+  const [name, setName] = useState('');
 
   useEffect(() => {
     fetchCategories();
   }, []);
 
-  const handleAdd = async (e) => {
+  const fetchCategories = async () => {
+    try {
+      const res = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/categories`);
+      setCategories(res.data);
+    } catch (err) {
+      console.error('Failed to fetch categories:', err);
+    }
+  };
+
+  const handleAddCategory = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:8082/categories', { name: newCategory });
-      setMessage('✅ Category added!');
-      setNewCategory('');
+      await axios.post(`${process.env.REACT_APP_API_BASE_URL}/categories`, { name });
+      setName('');
       fetchCategories();
-    } catch {
-      setMessage('❌ Failed to add category');
+    } catch (err) {
+      console.error('Error adding category:', err);
     }
   };
 
   return (
-    <div style={{ marginTop: '2rem' }}>
-      <h2>Manage Categories</h2>
-      {message && <p>{message}</p>}
-
-      <form onSubmit={handleAdd} style={{ display: 'flex', gap: '0.5rem' }}>
-        <input
-          type="text"
-          placeholder="New Category"
-          value={newCategory}
-          onChange={(e) => setNewCategory(e.target.value)}
-          required
-        />
-        <button type="submit">Add</button>
-      </form>
-
-      <ul style={{ marginTop: '1rem' }}>
-        {categories.map(cat => (
+    <div>
+      <h3>Categories</h3>
+      <ul>
+        {categories.map((cat) => (
           <li key={cat.id}>{cat.name}</li>
         ))}
       </ul>
+      <form onSubmit={handleAddCategory}>
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="New Category"
+          required
+        />
+        <button type="submit">Add Category</button>
+      </form>
     </div>
   );
 };

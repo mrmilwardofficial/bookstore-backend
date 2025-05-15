@@ -1,122 +1,94 @@
-import React, { useState, useEffect } from 'react';
+// BookList.jsx - Final Polished Version
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './Form.css'; // Assuming you have some CSS for styling
-const EditBookModal = ({ book, categories, onClose, onSave }) => {
-  const [formData, setFormData] = useState({
-    title: '',
-    author: '',
-    price: '',
-    categoryId: ''
-  });
+import EditBookModal from './EditBookModal';
+import './BookList.css';
+
+const BookList = () => {
+  const [books, setBooks] = useState([]);
+  const [editingBook, setEditingBook] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState('title');
 
   useEffect(() => {
-    if (book) {
-      setFormData({
-        title: book.title || '',
-        author: book.author || '',
-        price: book.price || '',
-        categoryId: book.categoryId || ''
-      });
-    }
-  }, [book]);
+    fetchBooks();
+  }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSave({ ...book, ...formData });
-    onClose(); // close after saving
-  };
-  const handleSave = async () => {
-    if (!formData.title || !formData.author || !formData.price || !formData.categoryId) {
-      alert("Please fill in all fields before saving.");
-      return;
-    }
-  
+  const fetchBooks = async () => {
     try {
-      await axios.put(`http://localhost:8082/books/${editingBook.id}`, formData);
-      onSave(); // refresh
-      onClose(); // close modal
-    } catch (error) {
-      alert("❌ Failed to update book.");
+      const res = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/books`);
+      setBooks(res.data);
+    } catch (err) {
+      console.error('Failed to fetch books:', err);
     }
   };
-  
-  if (!book) return null;
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/books/${id}`);
+      fetchBooks();
+    } catch (err) {
+      console.error('Delete failed:', err);
+    }
+  };
+
+  const handleEditSave = async (updatedBook) => {
+    try {
+      await axios.put(`${process.env.REACT_APP_API_BASE_URL}/books/${updatedBook.id}`, updatedBook);
+      setEditingBook(null);
+      fetchBooks();
+    } catch (err) {
+      console.error('Update failed:', err);
+    }
+  };
+
+  const filteredBooks = books.filter((book) =>
+    book.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const sortedBooks = [...filteredBooks].sort((a, b) => {
+    const valA = a[sortBy]?.toString().toLowerCase();
+    const valB = b[sortBy]?.toString().toLowerCase();
+    return valA > valB ? 1 : -1;
+  });
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
-      <div className="bg-white rounded-xl p-6 shadow-xl w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-4">Edit Book</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            className="w-full border border-gray-300 p-2 rounded"
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            placeholder="Title"
-            required
-          />
+    <div>
+      <div style={{ marginBottom: '1rem' }}>
+        <input
+          type="text"
+          placeholder="Search by title"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
 
-          <input
-            className="w-full border border-gray-300 p-2 rounded"
-            type="text"
-            name="author"
-            value={formData.author}
-            onChange={handleChange}
-            placeholder="Author"
-            required
-          />
-
-          <input
-            className="w-full border border-gray-300 p-2 rounded"
-            type="number"
-            step="0.01"
-            name="price"
-            value={formData.price}
-            onChange={handleChange}
-            placeholder="Price"
-            required
-          />
-
-          <select
-            name="categoryId"
-            value={formData.categoryId}
-            onChange={handleChange}
-            className="w-full border border-gray-300 p-2 rounded"
-            required
-          >
-            <option value="">Select Category</option>
-            {categories?.map(cat => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
-
-          <div className="flex justify-end gap-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            >
-              Save
-            </button>
-          </div>
-        </form>
+        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} style={{ marginLeft: '1rem' }}>
+          <option value="title">Title</option>
+          <option value="author">Author</option>
+          <option value="price">Price</option>
+        </select>
       </div>
+
+      {sortedBooks.map((book) => (
+        <div key={book.id} style={{ border: '1px solid #ccc', margin: '10px', padding: '10px' }}>
+          <h3>{book.title}</h3>
+          <p><strong>Author:</strong> {book.author}</p>
+          <p><strong>Price:</strong> ${book.price}</p>
+          <p><strong>Category:</strong> {book.category?.name || 'N/A'}</p>
+          <button onClick={() => setEditingBook(book)} style={{ marginRight: '10px' }}>Edit</button>
+          <button onClick={() => handleDelete(book.id)}>Delete</button>
+        </div>
+      ))}
+
+      {editingBook && (
+        <EditBookModal
+          editingBook={editingBook}
+          onClose={() => setEditingBook(null)}
+          onSave={handleEditSave}
+        />
+      )}
     </div>
   );
 };
 
-export default EditBookModal;
+export default BookList;

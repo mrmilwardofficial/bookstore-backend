@@ -1,10 +1,9 @@
-
 // BookList.jsx - Final Polished Version
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import EditBookModal from './EditBookModal';
-import './BookList.css'; // Assuming you have some CSS for styling
-import { toast } from 'react-toastify';
+import './BookList.css';
+
 const BookList = () => {
   const [books, setBooks] = useState([]);
   const [editingBook, setEditingBook] = useState(null);
@@ -17,7 +16,7 @@ const BookList = () => {
 
   const fetchBooks = async () => {
     try {
-      const res = await axios.get('http://localhost:8082/books');
+      const res = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/books`);
       setBooks(res.data);
     } catch (err) {
       console.error('Failed to fetch books:', err);
@@ -26,7 +25,7 @@ const BookList = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:8082/books/${id}`);
+      await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/books/${id}`);
       fetchBooks();
     } catch (err) {
       console.error('Delete failed:', err);
@@ -35,7 +34,7 @@ const BookList = () => {
 
   const handleEditSave = async (updatedBook) => {
     try {
-      await axios.put(`http://localhost:8082/books/${updatedBook.id}`, updatedBook);
+      await axios.put(`${process.env.REACT_APP_API_BASE_URL}/books/${updatedBook.id}`, updatedBook);
       setEditingBook(null);
       fetchBooks();
     } catch (err) {
@@ -63,7 +62,7 @@ const BookList = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
 
-        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} style={{ marginLeft: '1rem' }}>
           <option value="title">Title</option>
           <option value="author">Author</option>
           <option value="price">Price</option>
@@ -76,7 +75,7 @@ const BookList = () => {
           <p><strong>Author:</strong> {book.author}</p>
           <p><strong>Price:</strong> ${book.price}</p>
           <p><strong>Category:</strong> {book.category?.name || 'N/A'}</p>
-          <button onClick={() => setEditingBook(book)}>Edit</button>
+          <button onClick={() => setEditingBook(book)} style={{ marginRight: '10px' }}>Edit</button>
           <button onClick={() => handleDelete(book.id)}>Delete</button>
         </div>
       ))}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import BookList from './components/BookList';
 import AddBookForm from './components/AddBookForm';
 import axios from 'axios';
-import { ToastContainer } from 'react-toastify';
+
 import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
@@ -22,7 +22,7 @@ function App() {
   const [books, setBooks] = useState([]);
 
   const fetchBooks = () => {
-    axios.get('http://localhost:8082/books')
+    axios.get(`${process.env.REACT_APP_API_BASE_URL}/books`)
       .then(res => setBooks(res.data))
       .catch(err => console.error('Failed to fetch books:', err));
   };

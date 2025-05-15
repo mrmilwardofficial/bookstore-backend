@@ -2,6 +2,8 @@
   "name": "online-bookstore-frontend",
   "version": "0.1.0",
   "private": true,
+  "homepage": ".",
+  "proxy": "http://localhost:8080",
   "dependencies": {
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
@@ -14,12 +16,14 @@
     "react-toastify": "^11.0.5",
     "web-vitals": "^2.1.4"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
+"scripts": {
+  "start": "node server.js",
+  "build": "react-scripts build",
+  "dev": "react-scripts start",
+  "test": "react-scripts test",
+  "eject": "react-scripts eject"
+},
+
   "eslintConfig": {
     "extends": [
       "react-app",
